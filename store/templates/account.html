@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <article class="container-fluid">
+        <div class="card">
+
+            {% if order.count == 0 %}
+                <h3>Ваша история заказов пуста.</h3>
+            {% else %}
+                {% if order_active.count == 0 %}
+                    <h3>У вас нет активных заказов</h3>
+                {% else %}
+                    <h3>Активные заказы</h3>
+                    <table class="table">
+                        <tr>
+                            <td style="width: 20%">Номер заказ</td>
+                            <td style="width: 20%">Дата заказа</td>
+                            <td style="width: 20%">Статус заказа</td>
+                            <td style="width: 20%">Стоимость заказа</td>
+                            <td style="width: 20%">Детали заказа</td>
+                        </tr>
+                        {% for item in order_active %}
+                                <tr>
+                                    <td>{{ item }}</td>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.total }}</td>
+                                    <td><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#exampleModal-{{ item.id }}">Детали {{ item.detail }}</button>
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+                {% if order_finished.count == 0 %}
+                    <h3>У вас нет выполненых заказов</h3>
+                {% else %}
+                    <h3>Выполненые заказы</h3>
+                    <table class="table">
+                    <tr>
+                        <td style="width: 20%">Номер заказ</td>
+                        <td style="width: 20%">Дата заказа</td>
+                        <td style="width: 20%">Статус заказа</td>
+                        <td style="width: 20%">Стоимость заказа</td>
+                        <td style="width: 20%">Детали заказа</td>
+                    </tr>
+                    {% for item in order_finished %}
+                            <tr>
+                                <td>{{ item }}</td>
+                                <td>{{ item.date }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.total }}</td>
+                                <td><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#exampleModal-{{ item.id }}">Детали {{ item.detail }}</button>
+                                </td>
+                            </tr>
+                    {% endfor %}
+                {% endif %}
+
+            </table>
+
+            {% endif %}
+        </div>
+    </article>
+    <!-- Modal -->
+    {% for item in order_active %}
+                <div class="modal fade" id="exampleModal-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h5 class="modal-title text-center" id="exampleModalLabel">Детали {{ item.detail }}</h5>
+                                <table class="table">
+                                    <tr>
+                                        <td>Товар</td>
+                                        <td>К-во</td>
+                                        <td>Цена</td>
+                                    </tr>
+                                    {% for order_item in item.items.items.all %}
+                                            <tr>
+                                                <td>{{ order_item.product.name }}</td>
+                                                <td>{{ order_item.quantity }} шт.</td>
+                                                <td>{{ order_item.item_total_price }} грв.</td>
+                                            </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2">Сумма:</td>
+                                        <td>{{ item.total }} грв.</td>
+                                    </tr>
+                                </table>
+                                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+    {% for item in order_finished %}
+                <div class="modal fade" id="exampleModal-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h5 class="modal-title text-center" id="exampleModalLabel">Детали {{ item.detail }}</h5>
+                                <table class="table">
+                                    <tr>
+                                        <td>Товар</td>
+                                        <td>К-во</td>
+                                        <td>Цена</td>
+                                    </tr>
+                                    {% for order_item in item.items.items.all %}
+                                            <tr>
+                                                <td>{{ order_item.product.name }}</td>
+                                                <td>{{ order_item.quantity }} шт.</td>
+                                                <td>{{ order_item.item_total_price }} грв.</td>
+                                            </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="2">Сумма:</td>
+                                        <td>{{ item.total }} грв.</td>
+                                    </tr>
+                                </table>
+                                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+{% endblock content %}
+{% block scripts %}
+
+{% endblock scripts %}
+
+{% block styles %}
+
+{% endblock styles %}

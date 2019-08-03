@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <article class="container-fluid">
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'base' %}">Главная</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ parrentCategory.name }}</li>
+      </ol>
+    </nav>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    {% for category in categories %}
+                        {% if category.parentCategory == parrentCategory %}
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 row-cart">
+                                <div class="card w-100 card-menu" style="width: 18rem;" onclick="location.href='{{  category.get_absolute_url }}'">
+                                    <div class="card-header">
+                                        <div class="card-img-container"><img src="{{  category.image.url }}" alt="" class="card-img-top card-img"></div>
+                                        <h5 class="card-title text-center">{{ category.name }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        {%  endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </article>
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+{% block styles %}
+
+{% endblock styles %}

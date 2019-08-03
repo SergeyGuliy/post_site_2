@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <article class="container-fluid">
+    <div class="card">
+        {% if cart.items.count > 0 %}
+            <div class="my-cart">
+                <h3 class="text-center">Ваша корзина</h3>
+                <table class="table table-striped">
+                        <tr>
+                            <td class="text-center">Товар</td>
+                            <td class="text-center">Количество</td>
+                            <td class="text-center">Цена</td>
+                            <td class="text-center"></td>
+                        </tr>
+                    {% for item in cart.items.all %}
+                        <tr class="cart-item-{{ item.product.id }}">
+                            <td class="text-center">{{ item.product.name }}</td>
+                            <td class="text-center">
+                                <form action="" method="GET">
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="999" style="width: 50px;" class="cart-item-quantity" data-id="{{ item.id }}">
+                                </form>
+                            </td>
+                            <td class="text-center" id="cart-item-total-{{ item.id }}">{{ item.item_total_price }} грв.</td>
+                            <td class="text-center"><a href="#"><button class="btn btn-danger remove-from-cart" data-slug="{{ item.product.slug }}" data-id="{{ item.product.id }}">Удалить из корзины</button></a></td>
+                        </tr>
+                    {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td class="text-center">Итого:</td>
+                            <td class="text-center" id="cart_total_price">{{ cart.cart_total_price }} грв.</td>
+                            <td class="text-center"><a href="{% url "checkout" %}"><button class="btn btn-success">Оформить заказ</button></a></td>
+                        </tr>
+                </table>
+            </div>
+            <h3 class="my-cart-empty text-center"></h3>
+        {% else %}
+            <h3 class="my-cart-empty text-center">Ваша корзина пуста</h3>
+        {% endif %}
+
+    </div>
+
+    </article>
+{% endblock content %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.remove-from-cart').on('click', function (e) {
+                e.preventDefault();
+                product_slug = $(this).attr('data-slug');
+                item_product_id = $(this).attr('data-id');
+                data = {
+                    product_slug: product_slug
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '{% url "remove_from_cart" %}',
+                    data: data,
+                    success: function (data) {
+                        $('#cart_count').html(data.cart_total);
+                        $('.cart-item-'+item_product_id).css('display','none');
+                        $('#cart_total_price').html(parseFloat(data.cart_total_price).toFixed(2) + ' грв.');
+                        if(parseInt(data.cart_total) === 0){
+                            $('.my-cart').css("display", "none");
+                            $('.my-cart-empty').html('<h3 class="my-cart-empty text-center">Ваша корзина пуста</h3>');
+                        }
+                    }
+                })
+            })
+        });
+        $(document).ready(function(){
+            $('.cart-item-quantity').on('change', function () {
+                quantity = $(this).val();
+                item_id = $(this).attr('data-id');
+                data = {
+                    quantity: quantity,
+                    item_id: item_id
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '{% url "change_item_quantity" %}',
+                    data: data,
+                    success: function (data) {
+                        $('#cart-item-total-'+item_id).html(parseFloat(data.item_total_price).toFixed(2) + ' грв.');
+                        $('#cart_total_price').html(parseFloat(data.cart_total_price).toFixed(2) + ' грв.');
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock scripts %}
+
+{% block styles %}
+
+{% endblock styles %}

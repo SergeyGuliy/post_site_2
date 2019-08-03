@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <article class="container-fluid">
+        <div class="card">
+                <div class="my-cart">
+                    <h3 class="text-center">Ваш предварительный заказ</h3>
+                    <div class="row">
+                        <div class="col-6">
+                            <table class="table table-striped">
+                                    <tr>
+                                        <td class="text-center">Товар</td>
+                                        <td class="text-center">Количество</td>
+                                        <td class="text-center">Цена</td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                {% for item in cart.items.all %}
+                                    <tr>
+                                        <td class="text-center">{{ item.product.name }}</td>
+                                        <td class="text-center">{{ item.quantity }}</td>
+                                        <td class="text-center">{{ item.item_total_price }} грв.</td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-center">Итого:</td>
+                                        <td class="text-center">{{ cart.cart_total_price }} грв.</td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <form action="{% url "make_order" %}" method="POST">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div id="div_id_phone" class="form-group">
+                                            <label for="id_phone" class="control-label  requiredField">Контактый телефон<span class="asteriskField">*</span></label>
+                                            <div class="controls ">
+                                                <input type="tel" name="phone" class="textinput textInput form-control" required="" id="id_phone" value="+380">
+                                                <p id="hint_id_phone" class="help-block">Укажите котактный номер телефона.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">{{ form.buying_type|as_crispy_field }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">{{ form.address|as_crispy_field }}</div>
+                                    <div class="col-12">{{ form.comments|as_crispy_field }}</div>
+                                </div>
+                                <input type="submit" class="btn btn-success" value="Оформить заказ">
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+        </div>
+    </article>
+{% endblock content %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('#div_id_address').hide();
+            $('#id_buying_type').on('click', function () {
+                buying_type = $(this).val();
+                if (buying_type === 'delivery') {
+                    $("#div_id_address").show();
+                }
+                if (buying_type === 'self') {
+                    $("#div_id_address").hide();
+                }
+            })
+        })
+    </script>
+
+
+{% endblock scripts %}
+
+{% block styles %}
+
+{% endblock styles %}

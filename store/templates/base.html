@@ -1,0 +1,239 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Веко Мото Люкс</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        {% block head %}
+
+        {% endblock head %}
+
+    </head>
+    <body>
+        <header>
+            <div class="navbar navbar-dark">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-8 col-8">
+                    <a class="navbar-brand" href="{% url 'base' %}">BekoMotoSport</a>
+                </div>
+
+                <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-4 d-none d-md-flex">
+                    <div class="time_work">
+                        <span><a href=""><i class="fas fa-phone"></i> 050-280-81-65</a></span><br>
+                        <span><a href=""><i class="fas fa-phone"></i> 050-280-81-65</a></span><br>
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-3 col-md-4 d-none d-md-flex">
+                    <div class="time_work">
+                        <span><i class="fas fa-clock"></i><strong> Пн-Сб:</strong>&nbsp;09:00–18:00</span><br>
+                        <span><i class="fas fa-clock"></i><strong> Вс: </strong><span style="line-height: 22px;">выходной</span></span>
+                    </div>
+                </div>
+
+                <div class="col-xl-5 col-lg-4  col-md-12  col-sm-12  col-12 row">
+                    {% if not request.user.is_authenticated %}
+                        <p class="text-center col-xl-6 col-lg-12 col-md-6  col-sm-12 col-12" style="color: #d1ecf1;">Здраствуйте, гость</p>
+                        <div class="btn-group col-xl-6 col-lg-12 col-md-6  col-sm-12 col-12">
+                            <button type="button" class="btn btn-outline-success col-lg-6 col-md-6 col-sm-6 col-6" data-toggle="modal" data-target="#myModalLogin">Вход</button>
+                            <button type="button" class="btn btn-outline-success col-lg-6 col-md-6 col-sm-6 col-6" data-toggle="modal" data-target="#myModalRegistration">Регистрация</button>
+                        </div>
+                    {% else %}
+                        <p class="text-center col-xl-6 col-lg-12 col-md-6  col-sm-12 col-12" style="color: #d1ecf1;">Здраствуйте, {{ request.user }}!</p>
+                        <div class="btn-group col-xl-6 col-lg-12 col-md-6  col-sm-12 col-12">
+                            <button type="button" onclick="location.href='{% url 'account' %}'" class="btn btn-outline-success col-lg-6 col-md-6 col-sm-6 col-6">Заказы</button>
+                            <button type="button" onclick="location.href='{% url 'logout' %}'" class="btn btn-outline-success col-lg-6 col-md-6 col-sm-6 col-6">Выйти</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <nav class="navbar  navbar-dark navbar-expand-sm navbar-collapse">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav mr-auto">
+
+                        {% for parrentCategory in parrentCategories %}
+                            <div class="btn-group">
+                              <button type="button" onclick="location.href='{{ parrentCategory.get_absolute_url }}'" class="btn btn-secondary">{{ parrentCategory.name }}</button>
+                              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <div class="dropdown-menu">
+                                {% for category in categories %}
+                                    {% if category.parentCategory == parrentCategory %}
+                                        <a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+                                    {%  endif %}
+                                {% endfor %}
+                              </div>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                    <ul class="navbar-nav navbar-right">
+                        <li><a href="{% url 'cart' %}" class="nav-link">Корзина <span class="badge badge-secondary badge-pill" id="cart_count">
+                            {% if not request.session.total %}
+                                0 {% else %} {{ request.session.total }}
+                            {% endif %}
+                        </span></a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+    {% block content %}
+
+
+    {% endblock content %}
+
+
+    <footer class="container-fluid">
+        <div class="row">
+            <div class="col-xl-7 col-lg-7 col-md-4 col-sm-4 col-12">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-5">
+                        <a class="navbar-brand" href="{% url 'base' %}">BekoMotoSport</a>
+                        <p>© 2014—2019</p>
+                        <p>Motolux - Online Shopping</p>
+                    </div>
+                    <div class="col-xl-8 col-lg-7 d-none d-lg-flex">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6" style="width: 200px">
+                                <p>Каталог</p>
+                                <ul>
+                                    {% for parrentCategory in parrentCategories %}
+                                        <li><a href="{{ parrentCategory.get_absolute_url }}">{{ parrentCategory.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                                </ul>
+                            </div>
+                            <div class="col-xl-6 col-lg-6" style="width: 200px">
+                                <p>Клиентам</p>
+                                <ul>
+                                    {% if request.user.is_authenticated %}
+                                        <li><a href="{% url 'cart' %}">Корзина</a></li>
+                                        <li><a href="{% url 'account' %}">Заказы</a></li>
+                                        <li><a href="{% url 'logout' %}">Выйти</a></li>
+                                    {% else %}
+                                        <li><a href="" data-toggle="modal" data-target="#myModalLogin">Вход</a></li>
+                                        <li><a href="" data-toggle="modal" data-target="#myModalRegistration">Регистрация</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5 col-lg-5 col-md-8 col-sm-8 col-12">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <p>Контактная информация</p>
+                        <div><a target="_blank" href=""><i class="fas fa-phone"></i> 050-280-81-65</a></div>
+                        <div><a target="_blank" href=""><i class="fas fa-phone"></i> 050-280-81-65</a></div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <p>Как нас найти</p>
+                        <div>
+                            <a target="_blank" href="https://goo.gl/maps/CbkZKptCZQGsx5rQA">
+                                <i class="fas fa-map-marker-alt"></i> Закарпатская область, м. УЖгород, ул.Базарна 9
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .navbar-nav.mr-auto .btn-group {
+                margin: 0 5px 0 0;
+            }
+            article {
+                min-height: 363px;
+                margin: 10px 0 10px 0;
+            }
+            article.container > div.card {
+                min-height: 385px;
+            }
+            div.col-xl-5.col-lg-4.col-md-12.col-sm-12.col-12.row > p {
+                margin: auto;
+            }
+            .card-img-container{
+                height: 230px;
+                width: 230px;
+                margin: 0 auto;
+            }
+            .card-img{
+                height: 230px;
+                width: 230px;
+            }
+            .row-cart{
+                margin: 15px 0 15px 0;
+            }
+            h5.card-title.text-center{
+                margin: .50rem 0 .25rem 0;
+                color: #1a1a1a;
+            }
+            .card-menu:hover{
+                cursor: pointer;
+                box-shadow: 0px 0px 20px #3875d7;
+            }
+            .card-body {
+                padding: 10px;
+            }
+            header .navbar{
+                padding: 2px 16px;
+            }
+        </style>
+    {% block scripts %}
+
+    {% endblock scripts %}
+    {% block styles %}
+
+    {% endblock styles %}
+    </footer>
+    <!--MODAL-->
+        <div class="modal fade" id="myModalRegistration">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Регистрация</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                {{ register|crispy }}
+                                <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+                                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Закрыть</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="modal fade" id="myModalLogin">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Вход</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                {{ login_my|crispy }}
+                                <button type="submit" class="btn btn-primary btn-block">Войти</button>
+                                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Закрыть</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </body>
+</html>

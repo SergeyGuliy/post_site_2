@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <article class="container-fluid">
+
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'base' %}">Главная</a></li>
+          <li class="breadcrumb-item"><a href="{{ category.parentCategory.get_absolute_url }}">{{ category.parentCategory.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+      </ol>
+    </nav>
+
+
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    {% for product in products_of_category %}
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 row-cart">
+                            <div class="card w-100 card-menu" style="width: 18rem;">
+                                <div class="card-header" onclick="location.href='{{ product.get_absolute_url }}'">
+                                    <div class="card-img-container"><img src="{% static 'images/noImg.png' %}" alt="" class="card-img-top card-img"></div>
+                                    <h5 class="text-center card-title">{{ product.name }}</h5>
+                                </div>
+                                <div class="card-body" onclick="location.href='{{ product.get_absolute_url }}'">
+                                    <p class="card-text">{{ product.description }}</p>
+                                    <p class="card-text">Цена: {{ product.get_final_price }} грв</p>
+                                </div>
+                                    {% if not request.user.is_authenticated %}
+                                        <div class="btn-group btn-block">
+                                            <button type="button" class="col-6 btn btn-primary" data-toggle="modal" data-target="#myModalLogin">Вход</button>
+                                            <button type="button" class="col-6 btn btn-primary" data-toggle="modal" data-target="#myModalRegistration">Регистрация</button>
+                                        </div>
+
+                                    {% else %}
+                                        <div class="btn-group btn-block">
+                                            <button type="button" class="col-6 btn btn-primary add-to-cart" data-slug="{{ product.slug }}">В корзину</button>
+                                            <button type="button" class="col-6 btn btn-primary" onclick="location.href='{{ product.get_absolute_url }}'">Детальнее</button>
+                                        </div>
+                                    {% endif %}
+                            </div>
+
+
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </article>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.add-to-cart').on('click', function (e) {
+                e.preventDefault();
+                product_slug = $(this).attr('data-slug');
+                data = {
+                    product_slug: product_slug
+                };
+                $.ajax({
+                    type: "GET",
+                    url: '{% url "add_to_cart" %}',
+                    data: data,
+                    success: function (data) {
+                        $("#cart_count").html(data.cart_total);
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock scripts %}
+
+{% block styles %}
+
+{% endblock styles %}

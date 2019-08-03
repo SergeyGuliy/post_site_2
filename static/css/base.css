@@ -1,0 +1,39 @@
+body {
+  background-color: #333333; }
+
+header {
+  border-bottom: #721c24 solid 3px;
+  background-color: #1a1a1a; }
+  header .time_work {
+    margin-bottom: 0px;
+    color: #95999c; }
+  header a {
+    color: #d1ecf1; }
+  header a:hover {
+    color: #d1ecf1; }
+
+footer {
+  padding: 20px 20px 20px 20px;
+  border-top: #721c24 solid 3px;
+  background-color: #1a1a1a; }
+  footer p {
+    margin-bottom: 0px;
+    color: #95999c; }
+  footer a {
+    font-size: 14px;
+    color: #d1ecf1; }
+  footer a:hover {
+    color: #d1ecf1; }
+  footer ul {
+    padding: 5px; }
+  footer li {
+    list-style: none; }
+
+
+
+
+
+
+
+
+
